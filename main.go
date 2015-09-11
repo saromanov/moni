@@ -7,8 +7,8 @@ import
 	"github.com/codegangsta/cli"
 )
 
-func start() {
-	moni := New()
+func start(path string) {
+	moni := main.New(path)
 
 }
 
@@ -31,13 +31,13 @@ func main() {
   cli.StringFlag {
   	Name: "stats",
   	Value: "",
-  	Usage: "Return status of target machine"
-  }
+  	Usage: "Return status of target machine",
+  },
 
 }
   app.Action = func(c *cli.Context) {
     start := c.String("start")
-    fmt.Println(lang)
+    fmt.Println(start)
     conf := c.String("config")
     fmt.Println(conf)
     status := c.String("status")
