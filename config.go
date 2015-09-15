@@ -5,14 +5,13 @@ import
 	"time"
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
-	"os"
 )
 
 //Config provides basic configuration for moni
 type Config struct {
-	timeout time*Time
-	email   string
-	telegram string
+	Timeout *time.Time
+	Email   string
+	Telegram string
 }
 
 //LoadConfigData provides load configuration or set default params
@@ -39,6 +38,6 @@ func (conf *Config) setMissedValues() {
 
 func setDefaultParams() *Config {
 	conf := new(Config)
-	conf.timeout = time.Duration(1) * time.Minutes
+	conf.Timeout = time.Duration(1) * time.Minutes
 	return conf
 }
