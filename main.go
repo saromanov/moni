@@ -7,9 +7,9 @@ import
 	"github.com/codegangsta/cli"
 )
 
-func start(path string) {
-	moni := main.New(path)
-
+func start(path string, config *Config) {
+	moni := New(path)
+	
 }
 
 func main() {
