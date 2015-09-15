@@ -9,9 +9,15 @@ import
 
 //Config provides basic configuration for moni
 type Config struct {
-	Timeout *time.Time
+	Timeout time.Duration
 	Email   string
 	Telegram string
+	Hosts    []*Host
+}
+
+type Host struct {
+	Username  string
+	Password  string
 }
 
 //LoadConfigData provides load configuration or set default params
@@ -38,6 +44,6 @@ func (conf *Config) setMissedValues() {
 
 func setDefaultParams() *Config {
 	conf := new(Config)
-	conf.Timeout = time.Duration(1) * time.Minutes
+	conf.Timeout = 60* time.Second
 	return conf
 }
