@@ -10,14 +10,15 @@ import (
 type Moni struct {
 	hosts    []string
 	commands []string
-	sshcli   *SSHCli
+
+	//List of remote hosts with usetname and passwords
+	sshcli   []*SSHCli
 	config   *Config
 }
 
 //New provides initialization of Moni
 func New(path string) *Moni {
 	moni := new(Moni)
-	moni.sshcli = NewSSHClient()
 	moni.config = LoadConfigData(path)
 	return moni
 }
@@ -38,8 +39,8 @@ func (m *Moni) Start() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Printf("Start monitoring %s", time.String())
+	m.sshcli = initClients(m.config.Hosts)
+	fmt.Printf("Start monitoring %s", time.Now().String())
 	for {
 		go func(commands []string) {
 			for _, command := range commands {
@@ -47,14 +48,14 @@ func (m *Moni) Start() {
 			}
 		}(m.commands)
 
-		time.Sleep(m.config.timeout)
+		time.Sleep(m.config.Timeout)
 	}
 }
 
 //Execute current command
 func (m *Moni) execute(command string) {
 	for _, host := range m.hosts {
-		m.sshcli.Exec(host, command)
+		//m.sshcli.Exec(host, command)
 	}
 }
 
@@ -64,4 +65,12 @@ func (m *Moni) checkHosts()error {
 	}
 
 	return nil
+}
+
+func initClients(hosts []*Host)[]*SSHCli {
+	result := []*SSHCli{}
+	for _, host := range hosts {
+		result = append(result, NewSSHClient(host.Username, host.Password))
+	}
+	return result
 }
