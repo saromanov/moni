@@ -3,8 +3,8 @@ package main
 import
 (
 	"time"
-	"io/ioutil"
-	"gopkg.in/yaml.v2"
+	"github.com/saromanov/goconfig"
+	"log"
 )
 
 //Config provides basic configuration for moni
@@ -22,16 +22,12 @@ type Host struct {
 
 //LoadConfigData provides load configuration or set default params
 func LoadConfigData(path string) *Config {
-	data, err := ioutil.ReadFile(path)
+	conf := Config{}
+	err := goconfig.Load(path, &conf)
 	if err != nil {
-		return setDefaultParams()
+		log.Fatal(err)
 	}
-	var conf Config
-	yamlerr := yaml.Unmarshal(data, &conf)
-	if yamlerr != nil {
-		panic(yamlerr)
-	}
-
+	
 	conf.setMissedValues()
 	return &conf
 }
