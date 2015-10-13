@@ -44,7 +44,7 @@ func (m *Moni) Start() {
 	for {
 		go func(commands []string) {
 			for _, command := range commands {
-				m.execute(command)
+				m.execute("default", command)
 			}
 		}(m.commands)
 
@@ -53,9 +53,9 @@ func (m *Moni) Start() {
 }
 
 //Execute current command
-func (m *Moni) execute(command string) {
-	for _, host := range m.hosts {
-		//m.sshcli.Exec(host, command)
+func (m *Moni) execute(host, command string) {
+	for _, sshex := range m.sshcli {
+		sshex.Exec(host, command)
 	}
 }
 
