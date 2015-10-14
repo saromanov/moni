@@ -8,13 +8,9 @@ import
 	"io"
 )
 
-const (
-	password = "password"
-)
 
 type SSHCli struct {
 	config *ssh.ClientConfig
-	method string
 }
 
 type SSHResult {
@@ -23,14 +19,18 @@ type SSHResult {
 	stderr io.Writer
 }
 
-func NewSSHClient(user, pass string)* SSHCli {
+func NewSSHClient()* SSHCli {
 	sshcli := new(SSHCli)
+	sshcli.config = &ssh.ClientConfig{}
+	return sshcli
+}
+
+//AuthUsernamePassword provides auth with password to ssh server 
+func (sshcli*SSHCli) AuthUsernamePassword(username, passord string) {
 	sshcli.config = &ssh.ClientConfig{
 		User: user,
 		Auth: []ssh.AuthMethod{ssh.Password(pass)},
 	}
-
-	return sshcli
 }
 
 //Exec provides execute command on the target host
