@@ -5,6 +5,7 @@ import (
 	"time"
 	"errors"
 	"log"
+	"github.com/hashicorp/serf/serf"
 )
 
 type Moni struct {
@@ -14,6 +15,7 @@ type Moni struct {
 	//List of remote hosts with usetname and passwords
 	sshcli   []*SSHCli
 	config   *Config
+	serf     *serf.Serf
 }
 
 //New provides initialization of Moni
@@ -21,6 +23,12 @@ func New(path string) *Moni {
 	moni := new(Moni)
 	moni.config = LoadConfigData(path)
 	return moni
+}
+
+//AddNodes provides append nodes for monitoring
+func (m *Moni) AddNodes(addr []string)(int, error){
+	m.hosts = addr
+	n.serf.Join(addr, true)
 }
 
 //AddCommand provides append command for monitoring
