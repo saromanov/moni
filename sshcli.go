@@ -5,10 +5,22 @@ import
 	"golang.org/x/crypto/ssh"
 	"log"
 	"bytes"
+	"io"
+)
+
+const (
+	password = "password"
 )
 
 type SSHCli struct {
 	config *ssh.ClientConfig
+	method string
+}
+
+type SSHResult {
+	command string
+	output io.Writer
+	stderr io.Writer
 }
 
 func NewSSHClient(user, pass string)* SSHCli {
@@ -22,18 +34,32 @@ func NewSSHClient(user, pass string)* SSHCli {
 }
 
 //Exec provides execute command on the target host
-func (sshcli*SSHCli) Exec(host, command string) string {
+//Return result from command
+func (sshcli*SSHCli) Exec(host, command string) *SSHResult{
 	conn, err := ssh.Dial("tcp", host+":22", sshcli.config)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	session, err2 := conn.NewSession()
 	if err2 != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer session.Close()
-	var stdoutBuf bytes.Buffer
-	session.Stdout = &stdoutBuf
-	session.Run(command)
-	return stdoutBuf.String()
+	result := &SSHResult{}
+	stdout, errstdout := session.StdoutPipe()
+	if errstdout != nil {
+		return nil, err
+	}
+	go io.Copy(result.output, stdout)
+
+	stderr, errpos := session.StderrPipe()
+	if errpos != nil {
+		return nil, err
+	}
+	go io.Copy(result.stderr, stderr)
+	err := session.Run(command)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
