@@ -9,7 +9,6 @@ import (
 )
 
 type Moni struct {
-	hosts    []string
 	commands []string
 
 	//List of remote hosts with usetname and passwords
@@ -27,13 +26,17 @@ func New(path string) *Moni {
 }
 
 //AddNodes provides append nodes for monitoring
-func (m *Moni) AddNodes(addr []string)(int, error){
-	log.Printf("Add number of nodes: %d", len(addr))
-	m.hosts = addr
-	return m.serf.Join(addr, true)
+func (m *Moni) AddNodes(hosts []*Host)(int, error){
+	log.Printf("Add number of nodes: %d", len(hosts))
+	m.config.Hosts = hosts
+	addrs := make([]string, len(hosts))
+	for i, host := range hosts {
+		addrs[i] = host.Addr
+	}
+	return m.serf.Join(addrs, true)
 }
 
-//AddCommand provides append command for monitoring
+//AddCommand provides append command for monitoring for all hosts
 func (m *Moni) AddCommand(command string) {
 	m.commands = append(m.commands, command)
 }
@@ -65,13 +68,12 @@ func (m *Moni) Start() {
 //Execute current command
 func (m *Moni) execute(host, command string) {
 	for _, sshex := range m.sshcli {
-		sshex.Exec(host, command)
+		fmt.Println(sshex.Exec(host, command))
 	}
 }
 
 func (m *Moni) checkHosts()error {
-	fmt.Println("CONFIG: ", m.config)
-	if len(m.config.Hosts) == 0 {
+	if len(m.config.Hosts) == 0{
 		return errors.New("Information about hosts is not found")
 	}
 

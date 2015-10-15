@@ -34,7 +34,8 @@ func (sshcli*SSHCli) AuthUsernamePassword(username, password string) {
 //Exec provides execute command on the target host
 //Return result from command
 func (sshcli*SSHCli) Exec(host, command string) (*SSHResult, error) {
-	conn, err := ssh.Dial("tcp", host+":22", sshcli.config)
+	host = "127.0.0.1"
+	conn, err := ssh.Dial("tcp", host+":2667", sshcli.config)
 	if err != nil {
 		return nil, err
 	}

@@ -15,6 +15,7 @@ type Config struct {
 }
 
 type Host struct {
+	Addr string
 	Username string
 	Password string
 }
