@@ -14,12 +14,6 @@ type Config struct {
 	Hosts    []*Host
 }
 
-type Host struct {
-	Addr string
-	Username string
-	Password string
-}
-
 //LoadConfigData provides load configuration or set default params
 func LoadConfigData(path string)*Config {
 	conf := Config{}
