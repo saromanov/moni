@@ -70,6 +70,7 @@ func (m *Moni) execute(host, command string) {
 }
 
 func (m *Moni) checkHosts()error {
+	fmt.Println("CONFIG: ", m.config)
 	if len(m.config.Hosts) == 0 {
 		return errors.New("Information about hosts is not found")
 	}

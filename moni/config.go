@@ -25,7 +25,6 @@ func LoadConfigData(path string)*Config {
 	err := goconfig.Load(path, &conf)
 	if err != nil {
 		log.Printf("Config file %s is not found", path)
-		return nil
 	}
 
 	conf.setMissedValues()
@@ -34,7 +33,8 @@ func LoadConfigData(path string)*Config {
 
 //TODO
 func (conf *Config) setMissedValues() {
-
+	conf.Timeout = 5 * time.Second
+	conf.Hosts = []*Host{}
 }
 
 func setDefaultParams() *Config {
