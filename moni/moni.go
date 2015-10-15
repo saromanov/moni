@@ -22,11 +22,13 @@ type Moni struct {
 func New(path string) *Moni {
 	moni := new(Moni)
 	moni.config = LoadConfigData(path)
+	moni.serf = serfInit()
 	return moni
 }
 
 //AddNodes provides append nodes for monitoring
 func (m *Moni) AddNodes(addr []string)(int, error){
+	log.Printf("Add number of nodes: %d", len(addr))
 	m.hosts = addr
 	return m.serf.Join(addr, true)
 }
@@ -83,4 +85,14 @@ func initClients(hosts []*Host)[]*SSHCli {
 		result = append(result, sshcli)
 	}
 	return result
+}
+
+func serfInit()*serf.Serf {
+	conf := serf.DefaultConfig()
+	serfin, err := serf.Create(conf)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return serfin
 }
