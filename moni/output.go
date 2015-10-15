@@ -10,5 +10,5 @@ type Output struct {
 }
 
 func (output*Output) Fit(){
-	fmt.Printf("%s: %s", time.Now().String(), Data)
+	fmt.Printf("%s: %s", time.Now().String(), output.Data)
 }

@@ -1,10 +1,8 @@
-package main
+package moni
 
 import
 (
 	"golang.org/x/crypto/ssh"
-	"log"
-	"bytes"
 	"io"
 )
 
@@ -13,7 +11,7 @@ type SSHCli struct {
 	config *ssh.ClientConfig
 }
 
-type SSHResult {
+type SSHResult struct{
 	command string
 	output io.Writer
 	stderr io.Writer
@@ -26,40 +24,40 @@ func NewSSHClient()* SSHCli {
 }
 
 //AuthUsernamePassword provides auth with password to ssh server 
-func (sshcli*SSHCli) AuthUsernamePassword(username, passord string) {
+func (sshcli*SSHCli) AuthUsernamePassword(username, password string) {
 	sshcli.config = &ssh.ClientConfig{
-		User: user,
-		Auth: []ssh.AuthMethod{ssh.Password(pass)},
+		User: username,
+		Auth: []ssh.AuthMethod{ssh.Password(password)},
 	}
 }
 
 //Exec provides execute command on the target host
 //Return result from command
-func (sshcli*SSHCli) Exec(host, command string) *SSHResult{
+func (sshcli*SSHCli) Exec(host, command string) (*SSHResult, error) {
 	conn, err := ssh.Dial("tcp", host+":22", sshcli.config)
 	if err != nil {
 		return nil, err
 	}
 	session, err2 := conn.NewSession()
 	if err2 != nil {
-		return nil, err
+		return nil, err2
 	}
 	defer session.Close()
 	result := &SSHResult{}
 	stdout, errstdout := session.StdoutPipe()
 	if errstdout != nil {
-		return nil, err
+		return nil, errstdout
 	}
 	go io.Copy(result.output, stdout)
 
 	stderr, errpos := session.StderrPipe()
 	if errpos != nil {
-		return nil, err
+		return nil, errpos
 	}
 	go io.Copy(result.stderr, stderr)
-	err := session.Run(command)
-	if err != nil {
-		return nil, err
+	errrun := session.Run(command)
+	if errrun != nil {
+		return nil, errrun
 	}
 	return result, nil
 }

@@ -1,4 +1,4 @@
-package main
+package moni
 
 import (
 	"fmt"
@@ -28,7 +28,7 @@ func New(path string) *Moni {
 //AddNodes provides append nodes for monitoring
 func (m *Moni) AddNodes(addr []string)(int, error){
 	m.hosts = addr
-	n.serf.Join(addr, true)
+	return m.serf.Join(addr, true)
 }
 
 //AddCommand provides append command for monitoring
@@ -78,7 +78,9 @@ func (m *Moni) checkHosts()error {
 func initClients(hosts []*Host)[]*SSHCli {
 	result := []*SSHCli{}
 	for _, host := range hosts {
-		result = append(result, NewSSHClient(host.Username, host.Password))
+		sshcli := NewSSHClient()
+		sshcli.AuthUsernamePassword(host.Username, host.Password)
+		result = append(result, sshcli)
 	}
 	return result
 }

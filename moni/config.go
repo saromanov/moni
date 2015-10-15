@@ -1,4 +1,4 @@
-package main
+package moni
 
 import (
 	"github.com/saromanov/goconfig"
@@ -20,11 +20,12 @@ type Host struct {
 }
 
 //LoadConfigData provides load configuration or set default params
-func LoadConfigData(path string) *Config {
+func LoadConfigData(path string)*Config {
 	conf := Config{}
 	err := goconfig.Load(path, &conf)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Config file %s is not found", path)
+		return nil
 	}
 
 	conf.setMissedValues()
