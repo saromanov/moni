@@ -10,3 +10,7 @@ type Host struct {
 func (host*Host) GetCommands()[]string {
 	return host.Commands
 }
+
+func (host *Host) AddCommand(command string){
+	host.Commands = append(host.Commands, command)
+}

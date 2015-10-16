@@ -15,11 +15,13 @@ type Moni struct {
 	sshcli   []*SSHCli
 	config   *Config
 	serf     *serf.Serf
+	hosts    map[string]*Host
 }
 
 //New provides initialization of Moni
 func New(path string) *Moni {
 	moni := new(Moni)
+	moni.hosts = map[string]*Host{}
 	moni.config = LoadConfigData(path)
 	moni.serf = serfInit()
 	return moni
@@ -32,6 +34,7 @@ func (m *Moni) AddNodes(hosts []*Host)(int, error){
 	addrs := make([]string, len(hosts))
 	for i, host := range hosts {
 		addrs[i] = host.Addr
+		m.hosts[host.Addr] = host
 	}
 	return m.serf.Join(addrs, true)
 }
@@ -52,14 +55,15 @@ func (m *Moni) Start() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	m.mergeCommands()
 	m.sshcli = initClients(m.config.Hosts)
 	fmt.Printf("Start monitoring %s", time.Now().String())
 	for {
-		go func(commands []string) {
-			for _, command := range commands {
-				m.execute("default", command)
+		go func(hosts []*Host) {
+			for _, host := range hosts {
+				m.execute(host.Addr, host.Commands[0])
 			}
-		}(m.commands)
+		}(m.config.Hosts)
 
 		time.Sleep(m.config.Timeout)
 	}
@@ -78,6 +82,20 @@ func (m *Moni) checkHosts()error {
 	}
 
 	return nil
+}
+
+//move commands from "commands" to all host. Because these commands
+//should be executed on all of hosts
+func (m *Moni) mergeCommands() {
+	if len(m.commands) == 0 {
+		return
+	}
+
+	for _, host := range m.hosts {
+		for _, command := range m.commands {
+			host.AddCommand(command)
+		}
+	}
 }
 
 func initClients(hosts []*Host)[]*SSHCli {
