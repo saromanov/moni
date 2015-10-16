@@ -4,6 +4,8 @@ import
 (
 	"golang.org/x/crypto/ssh"
 	"io"
+	"io/ioutil"
+	"log"
 )
 
 
@@ -31,6 +33,25 @@ func (sshcli*SSHCli) AuthUsernamePassword(username, password string) {
 	}
 }
 
+//AuthWithFile provides auth with /.ssh/id_rsa file
+func (sshcli*SSHCli) AuthWithFile(username, path string) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	pubkey, err := ssh.ParsePrivateKey(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	sshcli.config = &ssh.ClientConfig {
+		User: username,
+		Auth: []ssh.AuthMethod{ssh.PublicKeys(pubkey)},
+	}
+
+}
+
 //Exec provides execute command on the target host
 //Return result from command
 func (sshcli*SSHCli) Exec(host, command string) (*SSHResult, error) {
@@ -45,6 +66,7 @@ func (sshcli*SSHCli) Exec(host, command string) (*SSHResult, error) {
 	}
 	defer session.Close()
 	result := &SSHResult{}
+
 	stdout, errstdout := session.StdoutPipe()
 	if errstdout != nil {
 		return nil, errstdout
