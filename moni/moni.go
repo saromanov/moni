@@ -5,6 +5,7 @@ import (
 	"time"
 	"errors"
 	"log"
+	"net"
 	"github.com/hashicorp/serf/serf"
 )
 
@@ -76,9 +77,21 @@ func (m *Moni) execute(host, command string) {
 	}
 }
 
+
 func (m *Moni) checkHosts()error {
 	if len(m.config.Hosts) == 0{
 		return errors.New("Information about hosts is not found")
+	}
+
+	return nil
+}
+
+//checking availability of hosts
+func (m *Moni) checkHostAvailibility(addr string) error {
+	conn, err := net.DialTimeout("tcp", addr, 15 * time.Second)
+	defer conn.Close()
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -101,8 +114,10 @@ func (m *Moni) mergeCommands() {
 func initClients(hosts []*Host)[]*SSHCli {
 	result := []*SSHCli{}
 	for _, host := range hosts {
+		fmt.Println(host)
 		sshcli := NewSSHClient()
-		sshcli.AuthUsernamePassword(host.Username, host.Password)
+		sshcli.AuthWithFile("haunted", "/home/haunted/.ssh/id_rsa.pub")
+		//sshcli.AuthUsernamePassword(host.Username, host.Password)
 		result = append(result, sshcli)
 	}
 	return result
