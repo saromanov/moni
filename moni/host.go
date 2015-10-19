@@ -22,14 +22,6 @@ type hostitem struct {
 	lastcheck time.Time
 }
 
-/*func (host*Host) GetCommands()[]string {
-	return host.Commands
-}
-
-func (host *Host) AddCommand(command string){
-	host.Commands = append(host.Commands, command)
-}*/
-
 func (host*hostitem) GetCommands()[]string {
 	return host.commands
 }
