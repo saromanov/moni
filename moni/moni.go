@@ -120,17 +120,6 @@ func (m *Moni) mergeCommands() {
 	}
 }
 
-func initClients(hosts []*Host)[]*SSHCli {
-	result := []*SSHCli{}
-	for _, host := range hosts {
-		fmt.Println(host)
-		sshcli := NewSSHClient()
-		//sshcli.AuthUsernamePassword(host.Username, host.Password)
-		result = append(result, sshcli)
-	}
-	return result
-}
-
 func initClient(host *Host)*SSHCli {
 	sshcli := NewSSHClient()
 	sshcli.AuthWithFile(host.Username, host.Path)
