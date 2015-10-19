@@ -5,7 +5,8 @@ import
 	"golang.org/x/crypto/ssh"
 	"io"
 	"io/ioutil"
-	"log"
+	//"log"
+	"bytes"
 )
 
 
@@ -35,7 +36,7 @@ func (sshcli*SSHCli) AuthUsernamePassword(username, password string) {
 
 //AuthWithFile provides auth with /.ssh/id_rsa file
 func (sshcli*SSHCli) AuthWithFile(username, path string) {
-	data, err := ioutil.ReadFile(path)
+	/*data, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,32 +44,48 @@ func (sshcli*SSHCli) AuthWithFile(username, path string) {
 	pubkey, err := ssh.ParsePrivateKey(data)
 	if err != nil {
 		log.Fatal(err)
-	}
+	}*/
 
 	sshcli.config = &ssh.ClientConfig {
 		User: username,
-		Auth: []ssh.AuthMethod{ssh.PublicKeys(pubkey)},
+		Auth: []ssh.AuthMethod{PublicKeyFile(path)},
 	}
 
 }
 
+func PublicKeyFile(file string) ssh.AuthMethod {
+	buffer, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil
+	}
+
+	key, err := ssh.ParsePrivateKey(buffer)
+	if err != nil {
+		return nil
+	}
+	return ssh.PublicKeys(key)
+}
+
 //Exec provides execute command on the target host
 //Return result from command
-func (sshcli*SSHCli) Exec(host, command string) (*SSHResult, error) {
+func (sshcli*SSHCli) Exec(host, command string) (string, error) {
 	host = "127.0.0.1"
 	conn, err := ssh.Dial("tcp", host+":2667", sshcli.config)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	session, err2 := conn.NewSession()
 	if err2 != nil {
-		return nil, err2
+		return "", err2
 	}
 	defer session.Close()
-	result := &SSHResult{}
+	//result := &SSHResult{}
 
-	stdout, errstdout := session.StdoutPipe()
-	if errstdout != nil {
+	var b bytes.Buffer
+	session.Stdout = &b
+
+	//stdout, errstdout := session.StdoutPipe()
+	/*if errstdout != nil {
 		return nil, errstdout
 	}
 	go io.Copy(result.output, stdout)
@@ -77,10 +94,10 @@ func (sshcli*SSHCli) Exec(host, command string) (*SSHResult, error) {
 	if errpos != nil {
 		return nil, errpos
 	}
-	go io.Copy(result.stderr, stderr)
+	go io.Copy(result.stderr, stderr)*/
 	errrun := session.Run(command)
 	if errrun != nil {
-		return nil, errrun
+		return "", errrun
 	}
-	return result, nil
+	return b.String(), nil
 }
