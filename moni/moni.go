@@ -77,7 +77,9 @@ func (m *Moni) Start() {
 	for {
 		go func(hosts []*hostitem) {
 			for _, host := range hosts {
-				m.execute(host.sshcli, host.addr, host.commands[0])
+				for _, command := range host.commands {
+					m.execute(host.sshcli, host.addr, command)
+				}
 			}
 		}(m.hostlist)
 
