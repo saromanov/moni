@@ -87,7 +87,12 @@ func (m *Moni) Start() {
 
 //Execute current command
 func (m *Moni) execute(sshcli *SSHCli, host, command string) {
-	fmt.Println(sshcli.Exec(host, command))
+	output, err := sshcli.Exec(host, command)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(output)
 }
 
 
