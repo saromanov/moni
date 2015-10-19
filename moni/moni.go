@@ -46,6 +46,7 @@ func (m *Moni) AddNodes(hosts []*Host)(int, error){
 		}
 
 		m.hosts[host.Addr] = item
+		m.hostlist = append(m.hostlist, item)
 		//m.hosts[host.Addr] = append(m.hosts[host.Addr], item)
 	}
 	return m.serf.Join(addrs, true)
