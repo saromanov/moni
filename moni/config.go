@@ -28,7 +28,7 @@ func LoadConfigData(path string)*Config {
 
 //TODO
 func (conf *Config) setMissedValues() {
-	conf.Timeout = 5 * time.Second
+	conf.Timeout = 1 * time.Second
 	conf.Hosts = []*Host{}
 }
 

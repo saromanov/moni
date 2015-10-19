@@ -16,13 +16,14 @@ type Moni struct {
 	sshcli   []*SSHCli
 	config   *Config
 	serf     *serf.Serf
-	hosts    map[string]*Host
+	hosts    map[string]*hostitem
+	hostlist []*hostitem
 }
 
 //New provides initialization of Moni
 func New(path string) *Moni {
 	moni := new(Moni)
-	moni.hosts = map[string]*Host{}
+	moni.hosts = map[string]*hostitem{}
 	moni.config = LoadConfigData(path)
 	moni.serf = serfInit()
 	return moni
@@ -35,7 +36,17 @@ func (m *Moni) AddNodes(hosts []*Host)(int, error){
 	addrs := make([]string, len(hosts))
 	for i, host := range hosts {
 		addrs[i] = host.Addr
-		m.hosts[host.Addr] = host
+		item := &hostitem{
+			addr: host.Addr,
+			username: host.Username,
+			password: host.Password,
+			commands: host.Commands,
+			sshcli: initClient(host),
+			lastcheck: time.Now(),
+		}
+
+		m.hosts[host.Addr] = item
+		//m.hosts[host.Addr] = append(m.hosts[host.Addr], item)
 	}
 	return m.serf.Join(addrs, true)
 }
@@ -57,24 +68,21 @@ func (m *Moni) Start() {
 		log.Fatal(err)
 	}
 	m.mergeCommands()
-	m.sshcli = initClients(m.config.Hosts)
 	fmt.Printf("Start monitoring %s", time.Now().String())
 	for {
-		go func(hosts []*Host) {
+		go func(hosts []*hostitem) {
 			for _, host := range hosts {
-				m.execute(host.Addr, host.Commands[0])
+				m.execute(host.sshcli, host.addr, host.commands[0])
 			}
-		}(m.config.Hosts)
+		}(m.hostlist)
 
 		time.Sleep(m.config.Timeout)
 	}
 }
 
 //Execute current command
-func (m *Moni) execute(host, command string) {
-	for _, sshex := range m.sshcli {
-		fmt.Println(sshex.Exec(host, command))
-	}
+func (m *Moni) execute(sshcli *SSHCli, host, command string) {
+	fmt.Println(sshcli.Exec(host, command))
 }
 
 
@@ -106,7 +114,7 @@ func (m *Moni) mergeCommands() {
 
 	for _, host := range m.hosts {
 		for _, command := range m.commands {
-			host.AddCommand(command)
+			host.addCommand(command)
 		}
 	}
 }
@@ -116,11 +124,16 @@ func initClients(hosts []*Host)[]*SSHCli {
 	for _, host := range hosts {
 		fmt.Println(host)
 		sshcli := NewSSHClient()
-		sshcli.AuthWithFile("haunted", "/home/haunted/.ssh/id_rsa.pub")
 		//sshcli.AuthUsernamePassword(host.Username, host.Password)
 		result = append(result, sshcli)
 	}
 	return result
+}
+
+func initClient(host *Host)*SSHCli {
+	sshcli := NewSSHClient()
+	sshcli.AuthWithFile(host.Username, host.Path)
+	return sshcli
 }
 
 func serfInit()*serf.Serf {
