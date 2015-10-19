@@ -36,12 +36,16 @@ func (m *Moni) AddNodes(hosts []*Host)(int, error){
 	addrs := make([]string, len(hosts))
 	for i, host := range hosts {
 		addrs[i] = host.Addr
+		client, err := initClient(host)
+		if err != nil {
+			continue
+		}
 		item := &hostitem{
 			addr: host.Addr,
 			username: host.Username,
 			password: host.Password,
 			commands: host.Commands,
-			sshcli: initClient(host),
+			sshcli: client,
 			lastcheck: time.Now(),
 		}
 
@@ -120,10 +124,16 @@ func (m *Moni) mergeCommands() {
 	}
 }
 
-func initClient(host *Host)*SSHCli {
+func initClient(host *Host)(*SSHCli, error) {
 	sshcli := NewSSHClient()
-	sshcli.AuthWithFile(host.Username, host.Path)
-	return sshcli
+	if host.Password != "" {
+		sshcli.AuthUsernamePassword(host.Username, host.Password)
+		return sshcli, nil
+	} else if host.Path != "" {
+		sshcli.AuthWithFile(host.Username, host.Path)
+		return sshcli, nil
+	}
+	return sshcli, fmt.Errorf("SSH client is not created")
 }
 
 func serfInit()*serf.Serf {
