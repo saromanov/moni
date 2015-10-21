@@ -62,8 +62,22 @@ func (m *Moni) AddCommand(command string) {
 }
 
 //AddEvent provides append new event
+//Event is a script
 func (m *Moni) AddEvent(command string, item func(data string) bool) {
+	
+}
 
+//AddMonitoring provides getting list of commands for monitoring
+//list of commands available in commands.go
+//Example AddMonitoring([]string{moni.Diskspace})
+//Also, it can be loaded from config file
+func (m *Moni) AddMonitoring(listcommands []string) {
+	for _, command := range listcommands {
+		switch command {
+		case Dikspace:
+			m.commands = append(m.commands, "df -h")
+		}
+	}
 }
 
 //Sart provides starting of monitoring
