@@ -92,7 +92,11 @@ func (m *Moni) Start() {
 		go func(hosts []*hostitem) {
 			for _, host := range hosts {
 				for _, command := range host.commands {
-					m.execute(host.sshcli, host.addr, command)
+					result, err := m.execute(host.sshcli, host.addr, command)
+					if err != nil {
+						log.Print(err)
+					}
+					fmt.Println(result)
 				}
 			}
 		}(m.hostlist)
@@ -102,13 +106,13 @@ func (m *Moni) Start() {
 }
 
 //Execute current command
-func (m *Moni) execute(sshcli *SSHCli, host, command string) {
+func (m *Moni) execute(sshcli *SSHCli, host, command string) (string, error) {
 	output, err := sshcli.Exec(host, command)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return "", err
 	}
-	fmt.Println(output)
+	
+	return output, nil
 }
 
 
