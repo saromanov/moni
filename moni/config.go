@@ -11,6 +11,8 @@ type Config struct {
 	Timeout  time.Duration
 	Email    string
 	Telegram string
+	//Write result to the outpath
+	Outpath string
 	Hosts    []*Host
 }
 
@@ -30,6 +32,7 @@ func LoadConfigData(path string)*Config {
 func (conf *Config) setMissedValues() {
 	conf.Timeout = 1 * time.Second
 	conf.Hosts = []*Host{}
+	conf.Outpath = "moniout"
 }
 
 func setDefaultParams() *Config {
