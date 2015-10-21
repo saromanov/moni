@@ -9,10 +9,13 @@ import (
 //Config provides basic configuration for moni
 type Config struct {
 	Timeout  time.Duration
+	//Write totification to Email
 	Email    string
+	//Write notification to Telegram
 	Telegram string
 	//Write result to the outpath
 	Outpath string
+	//Hosts for monitoring
 	Hosts    []*Host
 }
 
