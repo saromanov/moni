@@ -18,12 +18,15 @@ type Moni struct {
 	serf     *serf.Serf
 	hosts    map[string]*hostitem
 	hostlist []*hostitem
+	//commands contans functions for formatting output
+	outputfuncs map[string]Outputfunc
 }
 
 //New provides initialization of Moni
 func New(path string) *Moni {
 	moni := new(Moni)
 	moni.hosts = map[string]*hostitem{}
+	moni.outputfuncs = map[string]Outputfunc{}
 	moni.config = LoadConfigData(path)
 	moni.serf = serfInit()
 	return moni
@@ -76,6 +79,7 @@ func (m *Moni) AddMonitoring(listcommands []string) {
 		switch command {
 		case Dikspace:
 			m.commands = append(m.commands, "df -h")
+			m.outputfuncs["df -h"] = diskSpace
 		}
 	}
 }
@@ -96,7 +100,12 @@ func (m *Moni) Start() {
 					if err != nil {
 						log.Print(err)
 					}
-					fmt.Println(result)
+					f, ok := m.outputfuncs[command]
+					if ok {
+						fmt.Println(f(result))
+					} else {
+						fmt.Println(result)
+					}
 				}
 			}
 		}(m.hostlist)
