@@ -13,6 +13,11 @@ const (
 
 type Outputfunc func(string)(string, error)
 
+type Command struct {
+	F Outputfunc
+	Title string
+}
+
 //DiskSpace provides parse result from df -h
 func diskSpace(info string) (string,error) {
 	line := strings.Split(info, "\n")[1]
