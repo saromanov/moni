@@ -36,16 +36,6 @@ func (sshcli*SSHCli) AuthUsernamePassword(username, password string) {
 
 //AuthWithFile provides auth with /.ssh/id_rsa file
 func (sshcli*SSHCli) AuthWithFile(username, path string) {
-	/*data, err := ioutil.ReadFile(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	pubkey, err := ssh.ParsePrivateKey(data)
-	if err != nil {
-		log.Fatal(err)
-	}*/
-
 	sshcli.config = &ssh.ClientConfig {
 		User: username,
 		Auth: []ssh.AuthMethod{PublicKeyFile(path)},
