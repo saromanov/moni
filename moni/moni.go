@@ -77,7 +77,7 @@ func (m *Moni) AddEvent(command string, item func(data string) bool) {
 func (m *Moni) AddMonitoring(listcommands []string) {
 	for _, command := range listcommands {
 		switch command {
-		case Dikspace:
+		case Diskspace:
 			m.commands = append(m.commands, "df -h")
 			m.outputfuncs["df -h"] = diskSpace
 		}
