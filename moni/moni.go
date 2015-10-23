@@ -83,6 +83,13 @@ func (m *Moni) AddMonitoring(listcommands []string) {
 				Title: "Free disk space",
 				F: diskSpace,
 			}
+
+		case Networkinterfaces:
+			m.commands = append(m.commands, "ifconfig -s")
+			m.outputfuncs["ifconfig -s"] = &Command {
+				Title: "Network interfaces",
+				F: networkInterfaces,
+			}
 		}
 	}
 }
@@ -107,7 +114,7 @@ func (m *Moni) Start() {
 					if ok {
 						res, err := command.F(result)
 						if err == nil {
-							fmt.Println(fmt.Sprintf("%s: %s", command.Title, res))
+							fmt.Println(fmt.Sprintf("%s:\n %s", command.Title, res))
 						}
 					} else {
 						fmt.Println(result)

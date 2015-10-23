@@ -8,7 +8,8 @@ import (
 //Useful commands for checking state of the system
 
 const (
-	Diskspace = "df"
+	Diskspace         = "df"
+	Networkinterfaces = "ifconfig"
 )
 
 type Outputfunc func(string) (string, error)
@@ -30,4 +31,17 @@ func diskSpace(info string) (string, error) {
 		return "", fmt.Errorf("Can't get information about disk space")
 	}
 	return fields[3], nil
+}
+
+//networkInterfaces provides parse result from ifconfig
+func networkInterfaces(info string) (string, error) {
+	result :=""
+	lines := strings.Split(info, "\n")
+	for _, line := range lines[1:] {
+		item := strings.Fields(line)
+		if len(line) > 0 {
+			result += fmt.Sprintf("Name: %s, bytes: %s\n", item[0], item[3])
+		}
+	}
+	return result, nil
 }
