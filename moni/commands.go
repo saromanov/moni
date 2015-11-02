@@ -23,10 +23,11 @@ type Command struct {
 
 //DiskSpace provides parse result from df -h
 func diskSpace(info string) (string, error) {
-	line := strings.Split(info, "\n")[1]
-	if len(line) == 0 {
+	lines := strings.Split(info, "\n")
+	if len(lines) <= 1 {
 		return "", fmt.Errorf("Can't get information about disk space")
 	}
+	line := lines[1]
 
 	fields := strings.Fields(line)
 	if len(fields) < 4 {
