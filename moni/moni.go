@@ -115,6 +115,9 @@ func (m *Moni) Start() {
 						res, err := command.F(result)
 						if err == nil {
 							Show(fmt.Sprintf("%s:\n %s", command.Title, res))
+							if m.config.Outpath != "" {
+								Write(m.config.Outpath, fmt.Sprintf("%s:\n %s", command.Title, res))
+							}
 						}
 					} else {
 						Show(result)
