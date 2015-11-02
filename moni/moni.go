@@ -78,15 +78,15 @@ func (m *Moni) AddMonitoring(listcommands []string) {
 	for _, command := range listcommands {
 		switch command {
 		case Diskspace:
-			m.commands = append(m.commands, "df -h")
-			m.outputfuncs["df -h"] = &Command {
+			m.commands = append(m.commands, DiskSpaceCommand)
+			m.outputfuncs[DiskSpaceCommand] = &Command {
 				Title: "Free disk space",
 				F: diskSpace,
 			}
 
 		case Networkinterfaces:
-			m.commands = append(m.commands, "ifconfig -s")
-			m.outputfuncs["ifconfig -s"] = &Command {
+			m.commands = append(m.commands, NetworkinterfacesCommand)
+			m.outputfuncs[NetworkinterfacesCommand] = &Command {
 				Title: "Network interfaces",
 				F: networkInterfaces,
 			}

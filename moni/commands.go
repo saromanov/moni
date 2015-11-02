@@ -10,6 +10,8 @@ import (
 const (
 	Diskspace         = "df"
 	Networkinterfaces = "ifconfig"
+	DiskSpaceCommand = "df -h"
+	NetworkinterfacesCommand = "ifconfig -s"
 )
 
 type Outputfunc func(string) (string, error)
