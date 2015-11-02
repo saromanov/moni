@@ -114,10 +114,10 @@ func (m *Moni) Start() {
 					if ok {
 						res, err := command.F(result)
 						if err == nil {
-							fmt.Println(fmt.Sprintf("%s:\n %s", command.Title, res))
+							Show(fmt.Sprintf("%s:\n %s", command.Title, res))
 						}
 					} else {
-						fmt.Println(result)
+						Show(result)
 					}
 				}
 			}
