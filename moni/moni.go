@@ -32,7 +32,8 @@ func New(path string) *Moni {
 	return moni
 }
 
-//AddNodes provides append nodes for monitoring
+// AddNodes provides append nodes for monitoring.
+// Nodes represent as Host object
 func (m *Moni) AddNodes(hosts []*Host)(int, error){
 	log.Printf("Add number of nodes: %d", len(hosts))
 	m.config.Hosts = hosts
