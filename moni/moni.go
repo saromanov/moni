@@ -36,6 +36,9 @@ func New(path string) *Moni {
 // Nodes represent as Host object
 func (m *Moni) AddNodes(hosts []*Host)(int, error){
 	log.Printf("Add number of nodes: %d", len(hosts))
+	if len(hosts) == 0 {
+		return 0, fmt.Errorf("Node list is empty")
+	}
 	m.config.Hosts = hosts
 	addrs := make([]string, len(hosts))
 	for i, host := range hosts {
