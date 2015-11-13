@@ -17,6 +17,7 @@ type Moni struct {
 	config   *Config
 	serf     *serf.Serf
 	hosts    map[string]*hostitem
+	checks   []*Check
 	hostlist []*hostitem
 	//commands contans functions for formatting output
 	outputfuncs map[string]*Command
@@ -96,6 +97,15 @@ func (m *Moni) AddMonitoring(listcommands []string) {
 			}
 		}
 	}
+}
+
+//AddChecks provides setting list of checks to monitoring
+func (m *Moni) AddChecks(checks []*Check) error {
+	if len(checks) == 0 {
+		return fmt.Errorf("List of checks os empty")
+	}
+	m.checks = checks
+	return nil
 }
 
 //Sart provides starting of monitoring
