@@ -108,7 +108,7 @@ func (m *Moni) AddChecks(checks []*Check) error {
 	return nil
 }
 
-//Sart provides starting of monitoring
+// Start provides starting of monitoring
 func (m *Moni) Start() {
 	err := m.checkHosts()
 	if err != nil {
