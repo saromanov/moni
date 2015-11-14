@@ -1,9 +1,11 @@
 package moni
 
 import (
-	"github.com/saromanov/goconfig"
 	"log"
 	"time"
+
+	"github.com/saromanov/goconfig"
+	"github.com/saromanov/dirwatcher"
 )
 
 //Config provides basic configuration for moni
@@ -15,8 +17,20 @@ type Config struct {
 	Telegram string
 	//Write result to the outpath
 	Outpath string
+	//ReloadConfig provides reloading config during running
+	ReloadConfig bool 
 	//Hosts for monitoring
 	Hosts    []*Host
+}
+
+// reload provides reloading config
+func (conf *Config) reload(path string) {
+	watcher := dirwatcher.Init()
+	watcher.AddFile(path, func(item string, d *dirwatcher.DirWatcher){
+		newconfig := LoadConfigData(path)
+		conf = newconfig
+	})
+	watcher.Run()
 }
 
 //LoadConfigData provides load configuration or set default params
