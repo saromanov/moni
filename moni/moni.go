@@ -136,6 +136,21 @@ func (m *Moni) Start() {
 						Show(result)
 					}
 				}
+
+				for _, check := range m.checks {
+					result, err := m.execute(host.sshcli, host.addr, check.Path)
+					if err != nil {
+						log.Print(err)
+					}
+
+					if result == "0" {
+						Show( fmt.Sprintf("Host %s. Check %s is complete", host.addr, check.Path))
+						check.Complete()
+					} else {
+						Show( fmt.Sprintf("Host %s. Check %s is failed", host.addr, check.Path))
+						check.Fail()
+					}
+				}
 			}
 		}(m.hostlist)
 
