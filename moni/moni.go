@@ -153,7 +153,7 @@ func (m *Moni) execute(sshcli *SSHCli, host, command string) (string, error) {
 	return output, nil
 }
 
-
+//checkHosts return error if list of hosts is empty
 func (m *Moni) checkHosts() error {
 	if len(m.config.Hosts) == 0{
 		return fmt.Errorf("Information about hosts is not found")
