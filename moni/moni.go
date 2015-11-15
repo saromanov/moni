@@ -3,7 +3,6 @@ package moni
 import (
 	"fmt"
 	"time"
-	"errors"
 	"log"
 	"net"
 	"github.com/hashicorp/serf/serf"
@@ -155,9 +154,9 @@ func (m *Moni) execute(sshcli *SSHCli, host, command string) (string, error) {
 }
 
 
-func (m *Moni) checkHosts()error {
+func (m *Moni) checkHosts() error {
 	if len(m.config.Hosts) == 0{
-		return errors.New("Information about hosts is not found")
+		return fmt.Errorf("Information about hosts is not found")
 	}
 
 	return nil
